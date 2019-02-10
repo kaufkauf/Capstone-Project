@@ -1,0 +1,58 @@
+---
+title: "Capstone Project Proposal"
+author: "Kimberly Kaufman"
+date: "February 9, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Abstract
+
+This project aims to predict consumer banking customer behavior by analyzing 1.5 years' worth of monthly sample data from Santander Bank Spain. By looking at historical customer behavior data, forecasts can be made about which additional products customers will purchase in the next month. By predicting purchasing behavior at this level, Santander can make more effective recommendations and better meet the individual needs of their customers.
+
+**Note:** This problem was originally proposed on Kaggle. For more details, see <https://www.kaggle.com/c/santander-product-recommendation/>.
+
+### Analysis Approach
+
+18 months of historical data must be used to project additional purchases in the following (19th) month, referred to here as the *evaluation month*. An algorithm will be developed that uses customer demographic data to profile a suite of products that the customer will likely purchase over their lifetime. By comparing these customer demographic profiles to the monthly historical purchasing data to date, expected residual purchases can be calculated and calendarized. All expected residual purchases that fall into the evaluation month will be projected by customer in a space-delimited list.
+
+### Data
+
+Santander Bank sample data is available as three CSV files: a training set, a test set, and a sample submission. All files can be accessed [here](https://www.kaggle.com/c/santander-product-recommendation/) via Kaggle. Data has been transformed to protest customer privacy, and is therefore not representative of real Santander customers.
+
+The main challenge in analyzing this data will be accurately interpreting the variable definitions, as the qualitative data provided is written in Spanish due to being sourced from Santander Spain. There will need to be some immediate data munging performed in order to convert the variables to English.
+
+The test data consists of 929,615 observations of 24 variables, and the training data consists of 13,647,309 of 48 variables. Each observation represents a unique customer identifier. The training dataset will be the main dataset used for this analysis.
+
+The attributes of the training dataset include:
+
+* Month of purchase data
+* Customer identifier code
+* 24 customer demographic attributes
+    + These attributes include age, sex, spousal status, residential address, gross household income, and segmentation 
+* 24 product attributes
+    + These products include 11 types of accounts (such as savings, payroll, derivative, electronic, home); short, medium, and long term deposits; funds, mortgages, pensions, loans, taxes, credit cards, securities, payroll, pensions, and direct debit products.
+    
+The test dataset header is shown below:
+
+```{r code chunk #2, echo = FALSE}
+##install.packages("data.table")
+library(data.table)
+santander_test <- fread("C:/Users/Kim/Documents/Intro to Data Science/santander-product-recommendation/test_ver2.csv")
+santander_head <- head(santander_test)
+column_names <- c("Date","Customer Code","Employment Index","Country of Residence","Sex","Age","First Contract Date","New Customer Index","Customer Seniority","Customer Type","Last Primary Date","Customer Type Beg","Customer Relation Beg","Residence Index","Foreigner Index","Spouse Index","Channel","Deceased Index","Address type","Province Code","Province Name","Activity Index","Gross Household Income","Segment")
+##str(santander_test)
+knitr::kable(santander_head, caption = "Santander Sample Data", col.names = column_names)
+
+```
+
+### Deliverables
+
+The primary deliverables are the code used to execute the analysis described above.
+
+I will also deliver a paper and slide deck which will communicate the analysis process and the findings. The paper and slide deck will be presented at Springboard's Introduction to Data Science office hours.
+
+All final deliverables, as well as intermediate deliverables, will be made available on the project's [GitHub Repository](https://github.com/kaufkauf/Capstone-Project.git).
