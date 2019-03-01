@@ -1,0 +1,74 @@
+---
+title: "Capstone Project Data Wrangling"
+author: "Kimberly Kaufman"
+date: "March 1, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Introduction
+
+The following steps were taken to clean and wrangle the sample, test, and training data provided by Santander Bank Spain. This data will be used to predict a month's worth of banking product purchases for my continuing Capstone Project.
+
+For more details on this project, see the GitHub respository at <https://github.com/kaufkauf/Capstone-Project>.
+
+
+### Step 1: Cleaning Up column names
+
+After loading all three data sets, columns were both translated into English (from Spanish) and then renamed for simplicity, without losing any of the necessary level of product or demographic detail.  Translations of the columns were derived from the writeup on the [Kaggle data repository](https://www.kaggle.com/c/santander-product-recommendation/).  These names were then analyzed and shortened, concatenated into vectors, and then used to replace the column names of the data frames.  See below for before and after column names of the training dataset as an example:
+
+
+```{r code chunk #1, echo = FALSE, warning = FALSE}
+#install.packages("data.table")
+library(data.table)
+
+santandertrain <- fread("E:/KEK/R/santander-product-recommendation/train_ver2.csv")
+
+colnames(santandertrain)
+tr_column_translations <- c("Month_End","Customer_Code","Employee_Index","Country_of_Residence","Sex","Age",
+                            "Date_of_First_Contract","New_Customer_Index","Customer_Seniority","Primary_Index","Last_Date_as_Primary",
+                            "Customer_Type","Customer_Relation_Type","Residence_Index","Foreigner_Index","Spouse_Index",
+                            "Entrance_Channel","Deceased_Index","Address_Type","Province_Code","Province_Name",
+                            "Activity_Index","Gross_Household_Income","Segmentation",
+                            "Savings_Account","Guarantees","Current_Accounts","Derivative_Account","Payroll_Account",
+                            "Junior_Account","More_Particular_Account","Particular_Account","Particular_Plus_Account",
+                            "Short-Term_Deposits","Medium-Term_Deposits","Long-Term_Deposits","e-Account","Funds",
+                            "Mortgage","Pensions1","Loans","Taxes","Credit_Card","Securities","Home_Account",
+                            "Payroll","Pensions2","Direct_Debit")
+names(santandertrain) <- tr_column_translations
+colnames(santandertrain)
+
+```
+
+### Steps 2 & 3: Checking for outliers and missing values
+
+In order to get a better idea of the ranges of values in the data, I looked at a full summary of the training data and found outliers in one of the variables that I planned to possibly use in the analysis: Customer Seniority.  The highest value was 256 (months), which equates to 21 years of being a customer, a reasonable value.  However, there were 38 observations of Customer Seniority equal to -999999, which represents a large outlier and a negligible percentage of the data, so these values were filtered out.
+
+I found missing values in a shared set of observations that spanned several demographic variables: Employee Index, Country of Residence, Age, Date of First Contract, Customer Seniority, Primary Index, New Customer Index, Residence Index, Foreigner Index, Deceased Index, Address Type, and Activity Index.  All of these variables had NAs or blanks in 27,734 observations, which represents 0.2% of the data.  The main variable of importance for this project is the Age variable, so I filtered out all observations with an Age value of NA.
+
+I also found NA values in 217 observations of two product variables: Payroll and Pensions2.  As these are a negligible percentage of the data, I filtered these observations out as well.
+
+The following code was used to perform this filtering and cleaning for all three data sets:
+
+```{r code chunk #3, echo = TRUE, eval = FALSE}
+library(dplyr)
+
+santandertrain %>%
+  filter(!is.na(Age) & !is.na(Payroll) & !is.na(Pensions2) & Customer_Seniority != -999999) %>%
+  fwrite("E:/KEK/R/santandertrain_clean.csv")
+
+santandertest %>%
+  filter(!is.na(Age)) %>%
+  fwrite("E:/KEK/R/santandertest_clean.csv")
+
+santandersamp %>%
+  fwrite("E:/KEK/R/santandersamp_clean.csv")
+
+```
+
+### Other Considerations
+
+I anticipate the need for additional data manipulation, including some new mutated variables (e.g. Age cohort) to be added and used to group_by the data set for analysis.  These steps will be performed in continuing conversation with my mentor.
